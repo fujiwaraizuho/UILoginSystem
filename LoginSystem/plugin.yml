@@ -1,0 +1,8 @@
+name: LoginSystem
+main: fujiwaraizuho\Login
+version: er.β
+api:
+  - 3.0.0-ALPHA10
+author: fujiwaraizuho
+description: This is LoginSystem
+website: https://twitter.com/fujiwaraizuho 
