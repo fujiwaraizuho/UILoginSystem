@@ -46,7 +46,7 @@ class Login extends PluginBase
 	}
 
 
-	public function sendForm(Player $player, string $data)
+	public function sendForm(Player $player, array $data)
 	{
 		$pk = new ModalFormRequestPacket();
 

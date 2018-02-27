@@ -106,9 +106,9 @@ class EventListener implements Listener
 				"button2" => "English"
 			];
 
-			$formId = $this->owner->sendForm($player, $data);
+			$returnId = $this->owner->sendForm($player, $data);
 
-			$player->formId[Login::PLUGIN_NAME][Login::FORM_LANG_SELECT] = $formId;
+			$player->formId[Login::PLUGIN_NAME][Login::FORM_LANG_SELECT] = $returnId;
 
 			$player->setImmobile(true);
 
@@ -120,9 +120,9 @@ class EventListener implements Listener
 
 			$data = $this->owner->lang->getForm("login", $langName["lang"]);
 
-			$formId = $this->owner->sendForm($player, $data);
+			$returnId = $this->owner->sendForm($player, $data);
 
-			$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $formId;
+			$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $returnId;
 
 			$player->setImmobile(true);
 
@@ -180,7 +180,7 @@ class EventListener implements Listener
 			$formData = json_decode($packet->formData, true);
 
 			if (!isset($player->formId)) return;
-			if (!$player->formId[0] === Login::PLUGIN_NAME) return; 
+			if (!array_key_exists(Login::PLUGIN_NAME, $player->formId)) return;
 			if ($formId === $player->formId[Login::PLUGIN_NAME][Login::FORM_LANG_SELECT]) {
 				if ($formData) {
 					$player->lang = "jpn";
@@ -190,9 +190,9 @@ class EventListener implements Listener
 
 				$data = $this->owner->lang->getForm("register", $player->lang);
 				
-				$formId = $this->owner->sendForm($player, $data);
+				$returnId = $this->owner->sendForm($player, $data);
 
-				$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $formId;
+				$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $returnId;
 				$player->formId[Login::PLUGIN_NAME][Login::FORM_LANG_SELECT] = null;
 
 			} else if ($formId === $player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER]) {
@@ -212,9 +212,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 				
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
@@ -227,9 +227,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 				
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
@@ -242,9 +242,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
@@ -257,9 +257,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 				
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
@@ -296,9 +296,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 				
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
@@ -312,9 +312,9 @@ class EventListener implements Listener
 
 					$data["content"][1]["text"] = $error_message;
 				
-					$formId = $this->owner->sendForm($player, $data);
+					$returnId = $this->owner->sendForm($player, $data);
 
-					$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $formId;
+					$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $returnId;
 					$data["content"][1]["text"] = "";
 
 					return;
