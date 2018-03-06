@@ -1,4 +1,4 @@
-<img src="Logo.png" width="300px">  
+<img src="/assets/Logo.png" width="300px">  
 <!-- for poggit
 <img src="https://raw.githubusercontent.com/fujiwaraizuho/LoginSystem/master/assets/Logo.png" width="300px">  
 -->
