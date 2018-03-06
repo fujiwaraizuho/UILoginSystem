@@ -42,7 +42,7 @@ class EventListener implements Listener
 		$player = $event->getPlayer();
 		$result = $this->db->isRegister($player);
 
-		for ($i = 0; $i <= 2; $i++) { 
+		for ($i = 0; $i <= 3; $i++) { 
 			$player->formId[Login::PLUGIN_NAME][$i] = null;
 		}
 
