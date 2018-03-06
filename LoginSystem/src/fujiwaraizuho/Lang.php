@@ -8,27 +8,25 @@
 
 namespace fujiwaraizuho;
 
-use fujiwaraizuho\lang\JpnForm;
-use fujiwaraizuho\lang\EngForm;
+use fujiwaraizuho\lang\Jpn;
+use fujiwaraizuho\lang\Eng;
+
 
 class Lang
 {
 	private $db;
 
-	public function __construct(DB $db)
-	{
-		$this->db = $db;
-	}
+	public function __construct(){}
 
 
-	public function getForm(string $id, string $lang = "jpn")
+	public function getLang(string $id, string $lang = "jpn")
 	{
 		switch ($lang) {
 			case "jpn":
 
-				$langClass = new JpnForm();
+				$langClass = new Jpn();
 
-				$data = $langClass->Form[$id];
+				$data = $langClass->lang[$id];
 
 				return $data;
 
@@ -36,9 +34,9 @@ class Lang
 
 			case "eng":
 
-				$langClass = new EngForm();
+				$langClass = new Eng();
 
-				$data = $langClass->Form[$id];
+				$data = $langClass->lang[$id];
 
 				return $data;
 				break;

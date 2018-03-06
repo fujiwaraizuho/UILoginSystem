@@ -5,6 +5,15 @@ api:
   - 3.0.0
   - 3.0.0-ALPHA10
   - 3.0.0-ALPHA11
-author: fujiwaraizuho
 description: This is LoginSystem
+
+author: fujiwaraizuho
 website: https://twitter.com/fujiwaraizuho 
+
+commands:
+  updatename:
+    usage: "/updatename oldName new Name"
+    description: "ログインアカウントデータをアップデートできます。"
+  unregister:
+    usage: "/unregister"
+    description: "ログインアカウントを削除できます。"

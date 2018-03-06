@@ -9,9 +9,9 @@
 namespace fujiwaraizuho\lang;
 
 
-class JpnForm
+class Jpn
 {
-	public $Form = [
+	public $lang = [
 		"login" => [
 			"type" => "custom_form",
 			"title" => "LoginSystem",
@@ -46,6 +46,13 @@ class JpnForm
 					"placeholder" => "確認パスワード"
 				]
 			]
+		],
+		"re_unregister" => [
+			"type" => "modal",
+			"title" => "§l§c確認",
+			"content" => "あなたのアカウントを削除しますよろしければはいを選択してください？",
+			"button1" => "いいえ",
+			"button2" => "はい"
 		],
 		"error_empty" => "§cパスワードが入力されていません！",
 		"error_under" => "§c8文字以下のパスワードは安全のため登録できません！",

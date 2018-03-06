@@ -12,15 +12,12 @@ namespace fujiwaraizuho;
 use pocketmine\event\Listener;
 
 /* Event */
-use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerCommandPreprocessEvent;
-use pocketmine\event\block\BlockBreakEvent;
-use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
+
+/* Packet */
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 
 
@@ -32,10 +29,11 @@ class EventListener implements Listener
 	 * EventListener constructor.
 	 * @param Login $owner
 	 */
-	public function __construct(Login $owner, DB $db)
+	public function __construct(Login $owner, DB $db, Lang $lang)
 	{
 		$this->owner = $owner;
 		$this->db = $db;
+		$this->lang = $lang;
 	}
 
 
@@ -53,10 +51,14 @@ class EventListener implements Listener
 			if (is_null($login)) {
 				$player->logined = false;
 				$lang = $this->db->getLang($player);
-				$error_message = $this->owner->lang->getForm("kick_error_safety", $lang["lang"]);
-				$player->kick("§4[LoginSystem]\n\n".
-						  $error_message
-						  , false);
+				if (is_null($lang)) {
+					$error_message = "§4ユーザーIDが変わった時は運営に連絡してください！\n§4Please contact the operation when the user ID changes!";
+				} else {
+					$error_message = $this->lang->getLang("kick_error_safety", $lang["lang"]);
+				}
+				$player->kick("§4[LoginSystem]\n".
+							$error_message
+						  	, false);
 
 				$event->setCancelled();
 			}
@@ -79,7 +81,7 @@ class EventListener implements Listener
 			if (isset($player->autoLogin)) {
 
 				$lang = $this->db->getLang($player);
-				$message = $this->owner->lang->getForm("auto_login", $lang["lang"]);
+				$message = $this->lang->getLang("auto_login", $lang["lang"]);
 
 				$player->logined = true;
 
@@ -118,7 +120,7 @@ class EventListener implements Listener
 		if (isset($player->login)) {
 			$langName = $this->db->getLang($player);
 
-			$data = $this->owner->lang->getForm("login", $langName["lang"]);
+			$data = $this->lang->getLang("login", $langName["lang"]);
 
 			$returnId = $this->owner->sendForm($player, $data);
 
@@ -129,47 +131,7 @@ class EventListener implements Listener
 			unset($player->login);
 		}
 	}
-
-
-	public function onPlayerCommand(PlayerCommandPreprocessEvent $event)
-	{
-		$player = $event->getPlayer();
-		if (!$player->logined) {
-			$player->sendMessage("§c>> Permission error！");
-			$event->setCancelled();
-		}
-	}
-
-
-	public function onBreak(BlockBreakEvent $event)
-	{
-		$player = $event->getPlayer();
-		if (!$player->logined) {
-			$player->sendMessage("§c>> Permission error！");
-			$event->setCancelled();			
-		}
-	}
-
-
-	public function onPlace(BlockPlaceEvent $event)
-	{
-		$player = $event->getPlayer();
-		if (!$player->logined) {
-			$player->sendMessage("§c>> Permission error！");
-			$event->setCancelled();			
-		}
-	}
-
-
-	public function onChat(PlayerChatEvent $event)
-	{
-		$player = $event->getPlayer();
-		if (!$player->logined) {
-			$player->sendMessage("§c>> Permission error！");
-			$event->setCancelled();
-		}
-	}
-
+	
 
 	public function onData(DataPacketReceiveEvent $event)
 	{
@@ -188,7 +150,7 @@ class EventListener implements Listener
 					$player->lang = "eng";
 				}
 
-				$data = $this->owner->lang->getForm("register", $player->lang);
+				$data = $this->lang->getLang("register", $player->lang);
 				
 				$returnId = $this->owner->sendForm($player, $data);
 
@@ -198,7 +160,7 @@ class EventListener implements Listener
 			} else if ($formId === $player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER]) {
 				if (empty($formData)) {
 					$player->logined = false;
-					$player->kick("§4[LoginSystem]\n\n".
+					$player->kick("§4[LoginSystem]\n".
 								  "§4このサーバーはアカウント登録をしないとプレイできません！"
 								 , false);
 
@@ -207,8 +169,8 @@ class EventListener implements Listener
 
 				if ($formData[0] === "" || $formData[1] === "") {
 
-					$data = $this->owner->lang->getForm("register", $player->lang);
-					$error_message = $this->owner->lang->getForm("error_empty", $player->lang);
+					$data = $this->owner->lang->getLang("register", $player->lang);
+					$error_message = $this->lang->getLang("error_empty", $player->lang);
 
 					$data["content"][1]["text"] = $error_message;
 				
@@ -222,8 +184,8 @@ class EventListener implements Listener
 
 				if (strlen($formData[1]) < 8) {
 
-					$data = $this->owner->lang->getForm("register", $player->lang);
-					$error_message = $this->owner->lang->getForm("error_under", $player->lang);
+					$data = $this->lang->getLang("register", $player->lang);
+					$error_message = $this->lang->getLang("error_under", $player->lang);
 
 					$data["content"][1]["text"] = $error_message;
 				
@@ -237,8 +199,8 @@ class EventListener implements Listener
 
 				if ($formData[1] == $player->getName()) {
 
-					$data = $this->owner->lang->getForm("register", $player->lang);
-					$error_message = $this->owner->lang->getForm("error_notSafety", $player->lang);
+					$data = $this->lang->getLang("register", $player->lang);
+					$error_message = $this->lang->getLang("error_notSafety", $player->lang);
 
 					$data["content"][1]["text"] = $error_message;
 
@@ -250,10 +212,10 @@ class EventListener implements Listener
 					return;
 				}
 
-				if (!$formData[1] === $formData[2]) {
+				if ($formData[1] !== $formData[2]) {
 
-					$data = $this->owner->lang->getForm("register", $player->lang);
-					$error_message = $this->owner->lang->getForm("error_match", $player->lang);
+					$data = $this->lang->getLang("register", $player->lang);
+					$error_message = $this->lang->getLang("error_match", $player->lang);
 
 					$data["content"][1]["text"] = $error_message;
 				
@@ -273,15 +235,15 @@ class EventListener implements Listener
 				$player->formId[Login::PLUGIN_NAME][Login::FORM_REGISTER] = null;
 
 				$lang = $this->db->getLang($player);
-				$register_message = $this->owner->lang->getForm("register_message", $lang["lang"]);
+				$register_message = $this->lang->getLang("register_message", $lang["lang"]);
 				$player->sendMessage($register_message);
 
 			} else if ($formId === $player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN]) {
 				if (empty($formData)) {
 					$player->logined = false;
 					$lang = $this->db->getLang($player);
-					$error_message = $this->owner->lang->getForm("kick_error_login", $lang["lang"]);
-					$player->kick("§4[LoginSystem]\n\n".
+					$error_message = $this->lang->getLang("kick_error_login", $lang["lang"]);
+					$player->kick("§4[LoginSystem]\n".
 								  $error_message
 								 , false);
 
@@ -291,8 +253,8 @@ class EventListener implements Listener
 				if ($formData[1] === "") {
 
 					$lang = $this->db->getLang($player);
-					$data = $this->owner->lang->getForm("login", $lang["lang"]);
-					$error_message = $this->owner->lang->getForm("error_empty", $lang["lang"]);
+					$data = $this->lang->getLang("login", $lang["lang"]);
+					$error_message = $this->lang->getLang("error_empty", $lang["lang"]);
 
 					$data["content"][1]["text"] = $error_message;
 				
@@ -307,8 +269,8 @@ class EventListener implements Listener
 				if (strlen($formData[1]) < 8) {
 
 					$lang = $this->db->getLang($player);
-					$data = $this->owner->lang->getForm("login", $lang["lang"]);
-					$error_message = $this->owner->lang->getForm("login_error_under", $lang["lang"]);
+					$data = $this->lang->getLang("login", $lang["lang"]);
+					$error_message = $this->lang->getLang("login_error_under", $lang["lang"]);
 
 					$data["content"][1]["text"] = $error_message;
 				
@@ -329,8 +291,8 @@ class EventListener implements Listener
 				if ($result) {
 					$this->db->updateIp($player);
 					$lang = $this->db->getLang($player);
-					$update_ip = $this->owner->lang->getForm("update_ip", $lang["lang"]);
-					$login_message = $this->owner->lang->getForm("login_message", $lang["lang"]);
+					$update_ip = $this->lang->getLang("update_ip", $lang["lang"]);
+					$login_message = $this->lang->getLang("login_message", $lang["lang"]);
 					$player->sendMessage($login_message);
 					$player->sendMessage($update_ip);
 					$player->setImmobile(false);
@@ -338,11 +300,40 @@ class EventListener implements Listener
 				} else {
 					$player->logined = false;
 					$lang = $this->db->getLang($player);
-					$error_message = $this->owner->lang->getForm("kick_error_safety", $lang["lang"]);
-					$player->kick("§4[LoginSystem]\n\n".
+					$error_message = $this->lang->getLang("kick_error_safety", $lang["lang"]);
+					$player->kick("§4[LoginSystem]\n".
 								  $error_message
 								 , false);
 				}
+			} else if ($player->formId[Login::PLUGIN_NAME][Login::FORM_UNREGISTER]) {
+				if (!$formData) {
+					$unregister = $this->db->unRegister($player->unregister[Login::PLUGIN_NAME]);
+
+					if (is_null($unregister)) {
+						$sender->sendMessage("§c>> Account NotFound！");
+						return;
+					}
+
+					$allplayer = $this->owner->getServer()->getOnlinePlayers();
+
+					foreach ($allplayer as $player) {
+						$name = $player->getName();
+						$players[] = $name;
+					}
+
+					if (in_array($player->unregister[Login::PLUGIN_NAME], $players)) {
+						$player = $this->owner->getServer()->getPlayer($player->unregister[Login::PLUGIN_NAME]);
+						$player->kick("§c[LoginSystem]\n".
+									  "ログインデータが削除されました、再度ログインしてください！\n".
+									  "Login data deleted, please login again!"
+									  , false);
+					}
+
+					$player->sendMessage("§a>> Success！");
+				}
+
+				$player->formId[Login::PLUGIN_NAME][Login::FORM_UNREGISTER] = null;
+				unset($player->unregister[Login::PLUGIN_NAME]);
 			}
 		}
 	}

@@ -70,14 +70,14 @@ class DB
 	 * @return bool
 	 * @info アカウントあればtrue、アカウントがなければfalseを返す
 	 */
-	public function isRegister(Player $player): bool
+	public function isRegister(Player $player)
 	{
-		$name = strtolower($player->getName());
+		$xuid = $player->getXuid();
 
-		$value = "SELECT name FROM userdata WHERE name = :name";
+		$value = "SELECT xuid FROM userdata WHERE xuid = :xuid";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
+		$db->bindValue(":xuid", $xuid, SQLITE3_TEXT);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -92,9 +92,11 @@ class DB
 	/**
 	 * @param Player $player
 	 */
-	public function unRegister(Player $player)
+	public function unRegister(string $name)
 	{
-		$name = strtolower($player->getName());
+		$data = $this->getUserData(null, $name);
+
+		if (is_null($data)) return null;
 
 		MainLogger::getLogger()->info("§a". $name ." Delete Account Start...");
 		$value = "DELETE FROM userdata WHERE name = :name";
@@ -105,6 +107,8 @@ class DB
 		$db->execute();
 
 		MainLogger::getLogger()->info("§a". $name ." Deleted Account！");
+
+		return true;
 	}
 
 
@@ -122,7 +126,7 @@ class DB
 		$result = $this->isRegister($player);
 
 		if ($result) {
-			$data = $this->getUserData($player);
+			$data = $this->getUserData($player, $name);
 			if (is_null($data)) return;
 			if ($data["name"] === $name && $data["xuid"] === $xuid) {
 				if ($data["ip"] == $ip) {
@@ -143,17 +147,54 @@ class DB
 	public function updateIp(Player $player)
 	{
 		$name = strtolower($player->getName());
-		$ip   = $player->getAddress();
+		$newIp   = $player->getAddress();
+
+		$value = "SELECT ip FROM userdata WHERE name = :name";
+		$db = $this->db->prepare($value);
+
+		$db->bindValue(":name", $name, SQLITE3_TEXT);
+
+		$oldIp = $db->execute()->fetchArray(SQLITE3_TEXT);
+
+		if (empty($oldIp)) return null;
 
 		$value = "UPDATE userdata SET ip = :ip WHERE name = :name";
 		$db = $this->db->prepare($value);
 
 		$db->bindValue(":name", $name, SQLITE3_TEXT);
-		$db->bindValue(":ip"  , $ip  , SQLITE3_TEXT);
+		$db->bindValue(":ip"  , $newIp  , SQLITE3_TEXT);
 
 		$db->execute();
 
-		MainLogger::getLogger()->notice($name ." Updated IPAddress！");
+		MainLogger::getLogger()->notice("[". $name ."] ". $oldIp ." => ". $newIp ." Updated IPAddress！");
+	}
+
+
+	/**
+	 * @param Player $player
+	 */
+	public function updateName(string $oldName, string $newName)
+	{
+		$value = "SELECT name FROM userdata WHERE name = :name";
+		$db = $this->db->prepare($value);
+
+		$db->bindValue(":name", $oldName, SQLITE3_TEXT);
+
+		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
+
+		if (empty($result)) return null;
+
+		$value = "UPDATE userdata SET name = :newname WHERE name = :oldname";
+		$db = $this->db->prepare($value);
+
+		$db->bindValue(":oldname", $oldName, SQLITE3_TEXT);
+		$db->bindValue(":newname", $newName, SQLITE3_TEXT);
+
+		$db->execute();
+
+		MainLogger::getLogger()->notice($oldName ." => ". $newName ."  Updated Name！");
+
+		return true;
 	}
 
 
@@ -161,15 +202,20 @@ class DB
 	 * @param $player
 	 * @return array|bool
 	 */
-	public function getUserData($player)
+	public function getUserData($player = null, $name)
 	{
-		$name = strtolower($player->getName());
+		if (!is_null($player)) {
+			$namae = strtolower($player->getName());
+		} else {
+			$namae = strtolower($name);
+		}
+
 		$data = [];
 
 		$value = "SELECT * FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
+		$db->bindValue(":name", $namae, SQLITE3_TEXT);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -199,7 +245,7 @@ class DB
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
-		if (empty($result)) return false;
+		if (empty($result)) return null;
 
 		return $result;
 	}
