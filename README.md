@@ -8,7 +8,7 @@
 ***
 
 ## LoginSystem
-二か国語に対応したLoginSystemです。
+二か国語に対応したLoginSystemです。<br />
 UI化してあるので直感的な操作でアカウント登録・ログインができます。
 
 ### Commands
