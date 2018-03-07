@@ -24,4 +24,8 @@ UI化してあるので直感的な操作でアカウント登録・ログイン
 |名前の更新|`updatename`|`<oldname> <newname>`|
 
 ### Photos
-プラグインを入れることで導入されるシステムの画像を貼っておきます。
+プラグインを入れることで導入されるシステムの画像を貼っておきます。<br />
+<img src="/assets/lang.png" width="350px">
+<img src="/assets/register.png" width="350px"><br />
+<img src="/assets/unregister.png" width="350px">
+<img src="/assets/unregisterd.png" width="350px">
