@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: izuho
+ * User: fujiwaraizuho
  * Date: 2018/02/13
  * Time: 16:10
  */
@@ -14,11 +14,18 @@ use fujiwaraizuho\lang\Eng;
 
 class Lang
 {
-	private $db;
 
+	/**
+	 * Lang constructor.
+	 */
 	public function __construct(){}
 
 
+	/**
+	 * @param string $id
+	 * @param string $lang
+	 * @return null
+	 */
 	public function getLang(string $id, string $lang = "jpn")
 	{
 		switch ($lang) {

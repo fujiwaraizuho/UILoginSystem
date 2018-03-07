@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: izuho
+ * User: fujiwaraizuho
  * Date: 2018/02/12
  * Time: 22:34
  */
@@ -17,17 +17,22 @@ use pocketmine\utils\MainLogger;
 
 class DB
 {
+	/**
+	 * DB constructor.
+	 * @param string $dir
+	 * @param Login $owner
+	 */
 	public function __construct(string $dir, Login $owner)
 	{
 		$this->owner = $owner;
 
 		$this->db = new \SQLite3($dir ."data.db");
 		$this->db->exec("CREATE TABLE IF NOT EXISTS userdata (
-				name TEXT PRIMARY KEY,
-				pass TEXT,
-				ip   TEXT,
-				xuid TEXT,
-				lang TEXT
+				name PRIMARY KEY,
+				pass,
+				ip  ,
+				xuid,
+				lang 
 		)");
 	}
 
@@ -48,11 +53,11 @@ class DB
 
 		$pass_hash = password_hash($pass, PASSWORD_DEFAULT);
 
-		$db->bindValue(":name", $name     , SQLITE3_TEXT);
-		$db->bindValue(":pass", $pass_hash, SQLITE3_TEXT);
-		$db->bindValue(":ip"  , $ip       , SQLITE3_TEXT);
-		$db->bindValue(":xuid", $xuid     , SQLITE3_TEXT);
-		$db->bindValue(":lang", $lang     , SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
+		$db->bindValue(":pass", $pass_hash);
+		$db->bindValue(":ip"  , $ip);
+		$db->bindValue(":xuid", $xuid);
+		$db->bindValue(":lang", $lang);
 
 		$db->execute();
 
@@ -68,7 +73,6 @@ class DB
 	/**
 	 * @param Player $player
 	 * @return bool
-	 * @info アカウントあればtrue、アカウントがなければfalseを返す
 	 */
 	public function isRegister(Player $player)
 	{
@@ -77,15 +81,11 @@ class DB
 		$value = "SELECT xuid FROM userdata WHERE xuid = :xuid";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":xuid", $xuid, SQLITE3_TEXT);
+		$db->bindValue(":xuid", $xuid);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
-		if (empty($result)) {
-			return false;
-		} else {
-			return true;
-		}
+		return empty($result) ? false : true;
 	}
 
 
@@ -97,12 +97,11 @@ class DB
 		$data = $this->getUserData(null, $name);
 
 		if (is_null($data)) return null;
-
-		MainLogger::getLogger()->info("§a". $name ." Delete Account Start...");
+		
 		$value = "DELETE FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
 
 		$db->execute();
 
@@ -115,7 +114,6 @@ class DB
 	/**
 	 * @param Player $player
 	 * @return bool|null
-	 * @info ログインが必要であればtrue、必要なければfalseを返す
 	 */
 	public function login(Player $player)
 	{
@@ -129,11 +127,7 @@ class DB
 			$data = $this->getUserData($player, $name);
 			if (is_null($data)) return;
 			if ($data["name"] === $name && $data["xuid"] === $xuid) {
-				if ($data["ip"] == $ip) {
-					return false;
-				} else {
-					return true;
-				}
+				return $data["ip"] === $ip ? false : true;
 			} else {
 				return null;
 			}
@@ -147,26 +141,26 @@ class DB
 	public function updateIp(Player $player)
 	{
 		$name = strtolower($player->getName());
-		$newIp   = $player->getAddress();
+		$newIp = $player->getAddress();
 
 		$value = "SELECT ip FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
 
-		$oldIp = $db->execute()->fetchArray(SQLITE3_TEXT);
+		$oldIp = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
 		if (empty($oldIp)) return null;
 
 		$value = "UPDATE userdata SET ip = :ip WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
-		$db->bindValue(":ip"  , $newIp  , SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
+		$db->bindValue(":ip"  , $newIp);
 
 		$db->execute();
 
-		MainLogger::getLogger()->notice("[". $name ."] ". $oldIp ." => ". $newIp ." Updated IPAddress！");
+		MainLogger::getLogger()->notice("[". $name ."] ". $oldIp["ip"] ." => ". $newIp ." Updated IPAddress！");
 	}
 
 
@@ -178,7 +172,7 @@ class DB
 		$value = "SELECT name FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $oldName, SQLITE3_TEXT);
+		$db->bindValue(":name", $oldName);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -187,8 +181,8 @@ class DB
 		$value = "UPDATE userdata SET name = :newname WHERE name = :oldname";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":oldname", $oldName, SQLITE3_TEXT);
-		$db->bindValue(":newname", $newName, SQLITE3_TEXT);
+		$db->bindValue(":oldname", $oldName);
+		$db->bindValue(":newname", $newName);
 
 		$db->execute();
 
@@ -202,12 +196,12 @@ class DB
 	 * @param $player
 	 * @return array|bool
 	 */
-	public function getUserData($player = null, $name)
+	public function getUserData($player = null, $namae)
 	{
 		if (!is_null($player)) {
-			$namae = strtolower($player->getName());
+			$name = strtolower($player->getName());
 		} else {
-			$namae = strtolower($name);
+			$name = strtolower($namae);
 		}
 
 		$data = [];
@@ -215,7 +209,7 @@ class DB
 		$value = "SELECT * FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $namae, SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 
@@ -232,7 +226,6 @@ class DB
 	/**
 	 * @param Player $player
 	 * @return array|bool
-	 * @info jpn|eng
 	 */
 	public function getLang(Player $player)
 	{
@@ -241,7 +234,7 @@ class DB
 		$value = "SELECT lang FROM userdata WHERE name = :name";
 		$db = $this->db->prepare($value);
 
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
+		$db->bindValue(":name", $name);
 
 		$result = $db->execute()->fetchArray(SQLITE3_ASSOC);
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: izuho
+ * User: fujiwaraizuho
  * Date: 2018/02/12
  * Time: 22:31
  */
@@ -60,6 +60,13 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param CommandSender $sender
+	 * @param Command $command
+	 * @param string $label
+	 * @param array $args
+	 * @return bool
+	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args):bool
 	{
 		switch ($label) {
@@ -76,7 +83,7 @@ class Login extends PluginBase implements Listener
 
 				if (is_null($result)) {
 					$sender->sendMessage("§c>> Account NotFound！");
-					return false;
+					return true;
 				}
 
 				$sender->sendMessage("§a>> Success！");
@@ -179,6 +186,11 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param Player $player
+	 * @param array $data
+	 * @return int
+	 */
 	public function sendForm(Player $player, array $data)
 	{
 		$pk = new ModalFormRequestPacket();
@@ -192,6 +204,9 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param PlayerCommandPreprocessEvent $event
+	 */
 	public function onPlayerCommand(PlayerCommandPreprocessEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -202,6 +217,9 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param BlockBreakEvent $event
+	 */
 	public function onBreak(BlockBreakEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -212,6 +230,9 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param BlockPlaceEvent $event
+	 */
 	public function onPlace(BlockPlaceEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -222,6 +243,9 @@ class Login extends PluginBase implements Listener
 	}
 
 
+	/**
+	 * @param PlayerChatEvent $event
+	 */
 	public function onChat(PlayerChatEvent $event)
 	{
 		$player = $event->getPlayer();

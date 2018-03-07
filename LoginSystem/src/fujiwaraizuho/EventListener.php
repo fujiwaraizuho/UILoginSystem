@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: izuho
+ * User: fujiwaraizuho
  * Date: 2018/02/12
  * Time: 22:33
  */
@@ -25,6 +25,7 @@ class EventListener implements Listener
 {
 	private $db;
 	private $owner;
+
 	/**
 	 * EventListener constructor.
 	 * @param Login $owner
@@ -37,6 +38,9 @@ class EventListener implements Listener
 	}
 
 
+	/**
+	 * @param PlayerLoginEvent $event
+	 */
 	public function onLogin(PlayerLoginEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -71,6 +75,9 @@ class EventListener implements Listener
 	}
 
 
+	/**
+	 * @param PlayerJoinEvent $event
+	 */
 	public function onJoin(PlayerJoinEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -94,6 +101,9 @@ class EventListener implements Listener
 	}
 
 
+	/**
+	 * @param PlayerMoveEvent $event
+	 */
 	public function onMove(PlayerMoveEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -131,8 +141,11 @@ class EventListener implements Listener
 			unset($player->login);
 		}
 	}
-	
 
+
+	/**
+	 * @param DataPacketReceiveEvent $event
+	 */
 	public function onData(DataPacketReceiveEvent $event)
 	{
 		$packet = $event->getPacket();
@@ -169,7 +182,7 @@ class EventListener implements Listener
 
 				if ($formData[0] === "" || $formData[1] === "") {
 
-					$data = $this->owner->lang->getLang("register", $player->lang);
+					$data = $this->lang->getLang("register", $player->lang);
 					$error_message = $this->lang->getLang("error_empty", $player->lang);
 
 					$data["content"][1]["text"] = $error_message;
@@ -282,7 +295,7 @@ class EventListener implements Listener
 					return;
 				}
 
-				$data = $this->db->getUserData($player);
+				$data = $this->db->getUserData($player, null);
 
 				$result = password_verify($formData[1], $data["pass"]);
 
@@ -307,16 +320,16 @@ class EventListener implements Listener
 				}
 			} else if ($player->formId[Login::PLUGIN_NAME][Login::FORM_UNREGISTER]) {
 				if (!$formData) {
-					$unregister = $this->db->unRegister($player->unregister[Login::PLUGIN_NAME]);
+					$unRegister = $this->db->unRegister($player->unregister[Login::PLUGIN_NAME]);
 
-					if (is_null($unregister)) {
-						$sender->sendMessage("§c>> Account NotFound！");
+					if (is_null($unRegister)) {
+						$player->sendMessage("§c>> Account NotFound！");
 						return;
 					}
 
-					$allplayer = $this->owner->getServer()->getOnlinePlayers();
+					$allPlayer = $this->owner->getServer()->getOnlinePlayers();
 
-					foreach ($allplayer as $player) {
+					foreach ($allPlayer as $player) {
 						$name = $player->getName();
 						$players[] = $name;
 					}
