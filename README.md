@@ -7,7 +7,7 @@
 
 ***
 
-### LoginSystem
+## LoginSystem
 二か国語に対応したLoginSystemです。
 UI化してあるので直感的な操作でアカウント登録・ログインができます。
 
