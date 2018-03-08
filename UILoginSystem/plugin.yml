@@ -1,6 +1,6 @@
-name: LoginSystem
+name: UILoginSystem
 main: fujiwaraizuho\Login
-version: er.β
+version: er.β_1.0.0
 api:
   - 3.0.0
   - 3.0.0-ALPHA10
@@ -8,7 +8,7 @@ api:
 description: This is LoginSystem
 
 author: fujiwaraizuho
-website: https://twitter.com/fujiwaraizuho 
+website: https://twitter.com/Fujiwaraizuho 
 
 commands:
   updatename:

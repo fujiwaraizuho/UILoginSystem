@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 
 class Login extends PluginBase implements Listener
 {
-	const PLUGIN_NAME = "LoginSystem";
+	const PLUGIN_NAME = "UILoginSystem";
 
 	const FORM_LANG_SELECT = 0;
 	const FORM_LOGIN = 1;
