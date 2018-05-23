@@ -10,6 +10,7 @@ namespace fujiwaraizuho;
 
 /* Base */
 use pocketmine\event\Listener;
+use pocketmine\Player;
 
 /* Event */
 use pocketmine\event\player\PlayerLoginEvent;
@@ -19,6 +20,9 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 
 /* Packet */
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+
+/* Scheduler */
+use pocketmine\scheduler\PluginTask;
 
 
 class EventListener implements Listener
@@ -122,7 +126,7 @@ class EventListener implements Listener
 
 			$player->formId[Login::PLUGIN_NAME][Login::FORM_LANG_SELECT] = $returnId;
 
-			$player->setImmobile(true);
+			$this->owner->getServer()->getScheduler()->scheduleDelayedTask(new ImmobileTask($this->owner, $player), 3);
 
 			unset($player->register);
 		}
@@ -136,8 +140,8 @@ class EventListener implements Listener
 
 			$player->formId[Login::PLUGIN_NAME][Login::FORM_LOGIN] = $returnId;
 
-			$player->setImmobile(true);
-
+			$this->owner->getServer()->getScheduler()->scheduleDelayedTask(new ImmobileTask($this->owner, $player), 3);
+			
 			unset($player->login);
 		}
 	}
@@ -349,5 +353,20 @@ class EventListener implements Listener
 				unset($player->unregister[Login::PLUGIN_NAME]);
 			}
 		}
+	}
+}
+
+class ImmobileTask extends PluginTask
+{
+	public function __construct($owner, Player $player)
+	{
+		parent::__construct($owner);
+		$this->player = $player;
+	}
+
+
+	public function onRun(int $ticks)
+	{
+		$this->player->setImmobile(true);
 	}
 }
